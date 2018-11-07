@@ -1,13 +1,30 @@
 <template>
   <div>
-   <b-table  :bordered= "bordered"
+    
+   <!-- <b-table  :bordered= "bordered"
              :hover= "hover"
              :dark= "dark"
              :items= "items"
-             :fields= "fields"
              >
-    </b-table>
-    <button @click= "getCurrency('EUR','USD')" >get data</button>
+    </b-table> -->
+    <table style="width:100%">
+      <tr>
+        <th>
+          <b-form-select  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="BaseCurrencyList" class="mb-3" />
+        </th>
+        <th>
+          <b-form-select @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="BaseCurrencyList" class="mb-3" />
+        </th> 
+      </tr>
+      <tr>
+        <td>Jill</td>
+        <td>Smith</td> 
+      </tr>
+      <tr>
+        <td>Eve</td>
+        <td>Jackson</td> 
+      </tr>
+    </table>
 </div>
 
 <!-- card-1.vue -->
@@ -19,45 +36,80 @@ export default {
   name: 'Table',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
-      hover: true,
-      dark: true,
-      bordered: true,
-      baseCurrency:  'usd',
-      changeCurrency: 'chp',
-      fields: [ 'first_name', 'last_name', 'age' ],
-      items: [
-        { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-        { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-        { age: 89, first_name: 'Geneva', last_name: 'Wilson' }
-      ]
+      baseCurrency:  '',
+      shiftCurrency: '',
+      BaseCurrencyList: [],
+      baseCurrencySelected: null,
+      shiftCurrencySelected: null,
+      // fields: [ 'first_name', 'last_name', 'age' ],
+      // items: [
+      //   { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+      //   { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+      //   { age: 89, first_name: 'Geneva', last_name: 'Wilson' }
+      // ]
     }
   },
   mounted () {
-    this.baseCurrency = this.$store.state.baseCurrency
-    this.changeCurrency = this.$store.state.changeCurrency
-    this.fields = [ this.baseCurrency, this.changeCurrency]
-    this.items = []
-    const dict = {}
-    dict[this.changeCurrency] = 4
-    dict[this.baseCurrency] = 5
-    this.items.push(dict)
+    this.getSelectedCurrencies()
+    this.getCurrency(true)
 
   },
   methods: {
-
-    getCurrency(baseCurrency, changeCurrency) {
-      CurrencyService.getCurrency(baseCurrency).then(
-        response => {
+    async onChangeBaseCurrency(selectedCurrency) {
+      this.baseCurrency = selectedCurrency
+      await this.$store.commit('updateBaseCurrency', this.baseCurrency)
+      await this.getCurrency(false)
+      const amount = this.$store.state.calculatedCurrencies[this.baseCurrency][this.shiftCurrency]
+      console.log(this.$store.state.calculatedCurrencies)
+      console.log(amount)
+    },
+    onChangeShiftComponent(selectedCurrency) {
+      this.shiftCurrency = selectedCurrency
+      this.$store.commit('updateshiftCurrency', this.shiftCurrency)
+      const amount = this.$store.state.calculatedCurrencies[this.baseCurrency][this.shiftCurrency]
+      console.log(amount)
+    },
+    getSelectedCurrencies() {
+      this.baseCurrency = this.$store.state.baseCurrency
+      this.baseCurrencySelected = this.baseCurrency
+      this.shiftCurrency = this.$store.state.shiftCurrency
+      this.shiftCurrencySelected = this.shiftCurrency
+      this.BaseCurrencyList = this.$store.state.BaseCurrencyList
+    },
+    getCurrencyFromApi(isMounted, params) {
+      return CurrencyService.getCurrency(params).then(
+        async response => {
           console.log('success')
-          
-          const currenciesNames = Object.keys(response.data.rates)
-          console.log(currenciesNames)
-          const exchangedCurrencyAmount = response.data.rates[changeCurrency]
-          console.log(exchangedCurrencyAmount);
-          console.log(allCurrencies)
+          if(isMounted) {
+            const currenciesNames = Object.keys(response.data.rates)
+            await this.$store.commit('LoadBaseCurrencyList', currenciesNames)
+          }
+          this.checkBaseCurrencyInBaseCurrencyList()
+          const exchangedCurrencyAmount = response.data.rates[params.shiftCurrency]
+          this.BaseCurrencyList = this.$store.state.BaseCurrencyList
+          return await this.addCalculatedCurrencyToStore(params.baseCurrency, response.data.rates)
+        }, error => {
+          console.log(error)
         }
       )
+    },
+    getCurrency(isMounted) {
+      const params = {baseCurrency: this.$store.state.baseCurrency,
+                      shiftCurrency: this.$store.state.shiftCurrency}
+      if (!this.$store.state.calculatedCurrencies[params.baseCurrency]) {
+        return this.getCurrencyFromApi(isMounted, params)
+      }
+    },
+    async checkBaseCurrencyInBaseCurrencyList() {
+      if(!this.$store.state.BaseCurrencyList.includes(this.$store.state.baseCurrency)) {
+            return await this.$store.commit('addCurrencyToCurrencyList',this.$store.state.baseCurrency) //add the baseCurrency if it's not in the array
+          }
+    },
+    async addCalculatedCurrencyToStore(baseCurrency, rates) {
+      const calculatedCurrency = {}
+      calculatedCurrency['baseCurrency'] = baseCurrency
+      calculatedCurrency['shiftCurrencies'] = rates
+      return await this.$store.commit('addCalculatedCurrency', calculatedCurrency)
     }
   }
 }
