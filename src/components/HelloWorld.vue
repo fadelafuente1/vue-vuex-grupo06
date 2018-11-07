@@ -1,17 +1,12 @@
 <template>
   <div>
-  <b-card title="Card Title"
-          img-src="https://picsum.photos/600/300/?image=25"
-          img-alt="Image"
-          img-top
-          tag="article"
-          style="max-width: 20rem;"
-          class="mb-2">
-    <p class="card-text">
-      Some quick example text to build on the card title and make up the bulk of the card's content.
-    </p>
-    <b-button href="#" variant="primary">Go somewhere</b-button>
-  </b-card>
+   <b-table  :bordered= "bordered"
+             :hover= "hover"
+             :dark= "dark"
+             :items= "items"
+             :fields= "fields"
+             >
+    </b-table>
 </div>
 
 <!-- card-1.vue -->
@@ -22,7 +17,16 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      fields: [ 'first_name', 'last_name', 'age' ],
+      items: [
+        { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
+        { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
+        { age: 89, first_name: 'Geneva', last_name: 'Wilson' }
+      ],
+      hover: true,
+      dark: true,
+      bordered: true,
     }
   }
 }
