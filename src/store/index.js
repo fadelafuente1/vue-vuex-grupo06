@@ -7,7 +7,7 @@ export default new Vuex.Store(
   {
     state: {
       baseCurrency: 'USD',
-      changeCurrency: 'EUR',
+      shiftCurrency: 'EUR',
       selectedNumber: null,
       calculatedCurrencies: {},
       BaseCurrencyList: []
@@ -16,14 +16,14 @@ export default new Vuex.Store(
       updateBaseCurrency (state, baseCurrency) {
         state.baseCurrency = baseCurrency
       },
-      updateChangeCurrency (state, changeCurrency) {
-        state.changeCurrency = changeCurrency
+      updateshiftCurrency (state, shiftCurrency) {
+        state.shiftCurrency = shiftCurrency
       },
       exchangeCurrencies (state) {
         const baseCurrency = state.baseCurrency
-        const changeCurrency = state.changeCurrency
-        state.baseCurrency = changeCurrency
-        state.changeCurrency = baseCurrency
+        const shiftCurrency = state.shiftCurrency
+        state.baseCurrency = shiftCurrency
+        state.shiftCurrency = baseCurrency
       },
       LoadBaseCurrencyList (state, BaseCurrencyList) {
         state.BaseCurrencyList = BaseCurrencyList
@@ -32,13 +32,13 @@ export default new Vuex.Store(
         state.BaseCurrencyList.push(currency)
       },
       addCalculatedCurrency (state, calculatedCurrency) {
-        if (!state.calculatedCurrencies[calculatedCurrency['baseCurrency']]) {
-          state.calculatedCurrencies.push({
-            baseCurrency: calculatedCurrency['baseCurrency'],
-            changeCurrencies: calculatedCurrency['changeCurrencies']
-          })
+        const baseCurrency = calculatedCurrency.baseCurrency
+        const shiftCurrencies = calculatedCurrency.shiftCurrencies
+        if (!state.calculatedCurrencies[baseCurrency]) {
+          state.calculatedCurrencies[baseCurrency] = shiftCurrencies
         }
       }
+
     }
   }
 )
