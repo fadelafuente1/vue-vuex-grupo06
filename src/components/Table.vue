@@ -20,18 +20,32 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
+      hover: true,
+      dark: true,
+      bordered: true,
+      baseCurrency:  'usd',
+      changeCurrency: 'chp',
       fields: [ 'first_name', 'last_name', 'age' ],
       items: [
         { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
         { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
         { age: 89, first_name: 'Geneva', last_name: 'Wilson' }
-      ],
-      hover: true,
-      dark: true,
-      bordered: true,
+      ]
     }
   },
+  mounted () {
+    this.baseCurrency = this.$store.state.baseCurrency
+    this.changeCurrency = this.$store.state.changeCurrency
+    this.fields = [ this.baseCurrency, this.changeCurrency]
+    this.items = []
+    const dict = {}
+    dict[this.changeCurrency] = 4
+    dict[this.baseCurrency] = 5
+    this.items.push(dict)
+
+  },
   methods: {
+
     getCurrency(baseCurrency, changeCurrency) {
       CurrencyService.getCurrency(baseCurrency).then(
         response => {
