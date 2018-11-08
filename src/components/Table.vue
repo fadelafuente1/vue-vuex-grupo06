@@ -6,7 +6,9 @@
           <b-form-select  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="BaseCurrencyList" class="mb-3" />
         </th>
         <th>
-          <button type="button" @click="onClickExhange()"> </button>
+          <button type="button" @click="onClickExhange()"> 
+            <i class="fas fa-arrows-alt-h"></i>
+          </button>
         </th>
         <th>
           <b-form-select @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="BaseCurrencyList" class="mb-3" />
