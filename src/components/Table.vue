@@ -1,33 +1,27 @@
 <template>
   <div>
-    
-   <!-- <b-table  :bordered= "bordered"
-             :hover= "hover"
-             :dark= "dark"
-             :items= "items"
-             >
-    </b-table> -->
     <table style="width:100%">
       <tr>
         <th>
           <b-form-select  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="BaseCurrencyList" class="mb-3" />
         </th>
         <th>
+          <button type="button" @click="onClickExhange()"> </button>
+        </th>
+        <th>
           <b-form-select @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="BaseCurrencyList" class="mb-3" />
         </th> 
       </tr>
-      <tr>
-        <td>Jill</td>
-        <td>Smith</td> 
-      </tr>
-      <tr>
-        <td>Eve</td>
-        <td>Jackson</td> 
+      <tr v-for="numberToTable in $store.state.numbersToTable" :key="numberToTable.baseNumber">
+        <th class="text-center">{{numberToTable.baseNumber}}</th>
+        <th></th>
+        <th class="text-center">{{numberToTable.shiftNumber}}</th>
       </tr>
     </table>
+    <button type="button" @click = "onClickIncrease()"> Aumentar</button>
+    <button type="button" @click = "onClickDecrease()"> Disminuir</button>
 </div>
 
-<!-- card-1.vue -->
 </template>
 
 <script>
@@ -41,33 +35,38 @@ export default {
       BaseCurrencyList: [],
       baseCurrencySelected: null,
       shiftCurrencySelected: null,
-      // fields: [ 'first_name', 'last_name', 'age' ],
-      // items: [
-      //   { age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-      //   { age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-      //   { age: 89, first_name: 'Geneva', last_name: 'Wilson' }
-      // ]
     }
   },
-  mounted () {
+  async mounted () {
     this.getSelectedCurrencies()
-    this.getCurrency(true)
+    await this.getCurrency(true)
+    await this.$store.commit('loadCurrentShiftCurrencyAmount')
+    await this.$store.commit('loadNumbersToTable')
 
   },
   methods: {
+    onClickIncrease() {
+      console.log('incrementar')
+      this.$store.dispatch('increasePowerOf10AndLoadNumberToTable')
+    },
+    async onClickDecrease() {
+      this.$store.dispatch('decreasePowerOf10AndLoadNumberToTable')
+    },
     async onChangeBaseCurrency(selectedCurrency) {
       this.baseCurrency = selectedCurrency
       await this.$store.commit('updateBaseCurrency', this.baseCurrency)
       await this.getCurrency(false)
-      const amount = this.$store.state.calculatedCurrencies[this.baseCurrency][this.shiftCurrency]
-      console.log(this.$store.state.calculatedCurrencies)
-      console.log(amount)
+      await this.$store.commit('loadCurrentShiftCurrencyAmount')
+      await this.$store.commit('loadNumbersToTable')
+      console.log(this.$store.state.numbersToTable)
     },
-    onChangeShiftComponent(selectedCurrency) {
+    async onChangeShiftComponent(selectedCurrency) {
       this.shiftCurrency = selectedCurrency
       this.$store.commit('updateshiftCurrency', this.shiftCurrency)
-      const amount = this.$store.state.calculatedCurrencies[this.baseCurrency][this.shiftCurrency]
-      console.log(amount)
+      await this.$store.commit('loadCurrentShiftCurrencyAmount')
+      await this.$store.commit('loadNumbersToTable')
+      console.log(this.$store.state.numbersToTable)
+
     },
     getSelectedCurrencies() {
       this.baseCurrency = this.$store.state.baseCurrency
