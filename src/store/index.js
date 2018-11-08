@@ -28,6 +28,8 @@ export default new Vuex.Store(
             await store.commit('addCalculatedCurrency', shiftCurrencies)
             await store.commit('loadCurrentShiftCurrencyAmount')
             await store.commit('loadNumbersToTable')
+            await store.commit('addSubrowToNumbersToTable')
+            console.log(store.state.numbersToTable)
           }, error => {
             console.log(error)
           })
@@ -101,9 +103,26 @@ export default new Vuex.Store(
           const shiftNumber = baseNumber * state.currentShiftCurrencyAmount
           numbers['baseNumber'] = baseNumber
           numbers['shiftNumber'] = shiftNumber.toFixed(2)
-          console.log(numbers)
           state.numbersToTable.push(numbers)
         }
+      },
+      addSubrowToNumbersToTable (state) {
+        state.numbersToTable.forEach(
+          row => {
+            const subrowNumbersToTable = []
+            for (let subrowValue of _.range(10)) {
+              const subrowNumbers = {}
+              const subrowUnit = subrowValue + 1
+              const subrowPowerOf10Number = state.powerOf10Number - 1
+              const subrowBaseNumber = row['baseNumber'] + subrowUnit * Math.pow(10, subrowPowerOf10Number)
+              const subrowShiftNumber = subrowBaseNumber * state.currentShiftCurrencyAmount
+              subrowNumbers['baseNumber'] = subrowBaseNumber
+              subrowNumbers['shiftNumber'] = subrowShiftNumber.toFixed(2)
+              subrowNumbersToTable.push(subrowNumbers)
+            }
+            row['subrowNumbers'] = subrowNumbersToTable
+          }
+        )
       }
     }
   }
