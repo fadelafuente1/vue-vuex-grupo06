@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import _ from 'lodash'
+import CurrencyService from '../services/CurrencyService'
 
 Vue.use(Vuex)
-
 export default new Vuex.Store(
   {
     state: {
@@ -18,6 +18,20 @@ export default new Vuex.Store(
       numbersToTable: []
     },
     actions: {
+      async getCurrencyFromApiAndUpdateEverything (store) {
+        return CurrencyService.getCurrency(store.state.baseCurrency).then(
+          async response => {
+            console.log('success')
+            const shiftCurrencies = response.data.rates
+            await store.commit('LoadBaseCurrencyList', shiftCurrencies)
+            await store.commit('addCurrencyToCurrencyList', store.state.baseCurrency) // add the baseCurrency if it's not in the array
+            await store.commit('addCalculatedCurrency', shiftCurrencies)
+            await store.commit('loadCurrentShiftCurrencyAmount')
+            await store.commit('loadNumbersToTable')
+          }, error => {
+            console.log(error)
+          })
+      },
       async increasePowerOf10AndLoadNumberToTable (store) {
         await store.commit('increasePowerOf10')
         store.commit('loadNumbersToTable')
@@ -25,6 +39,19 @@ export default new Vuex.Store(
       async decreasePowerOf10AndLoadNumberToTable (store) {
         await store.commit('decreasePowerOf10')
         store.commit('loadNumbersToTable')
+      },
+      async exchangeCurrenciesAndLoadNumberToTable (store) {
+        await store.commit('exchangeCurrencies')
+        if (!store.state.calculatedCurrencies[store.state.baseCurrency]) {
+          return store.dispatch('getCurrencyFromApiAndUpdateEverything')
+        }
+        await store.commit('loadCurrentShiftCurrencyAmount')
+        return store.commit('loadNumbersToTable')
+      },
+      async updateShiftCurrencyAndLoadNumberToTable (store, selectedCurrency) {
+        await store.commit('updateshiftCurrency', selectedCurrency)
+        await store.commit('loadCurrentShiftCurrencyAmount')
+        await store.commit('loadNumbersToTable')
       }
     },
     mutations: {
@@ -40,17 +67,20 @@ export default new Vuex.Store(
         state.baseCurrency = shiftCurrency
         state.shiftCurrency = baseCurrency
       },
-      LoadBaseCurrencyList (state, BaseCurrencyList) {
-        state.BaseCurrencyList = BaseCurrencyList
+      LoadBaseCurrencyList (state, rates) {
+        if (!state.currentShiftCurrencyAmount) {
+          const BaseCurrencyList = Object.keys(rates)
+          state.BaseCurrencyList = BaseCurrencyList
+        }
       },
       addCurrencyToCurrencyList (state, currency) {
-        state.BaseCurrencyList.push(currency)
+        if (!state.BaseCurrencyList.includes(state.baseCurrency)) {
+          state.BaseCurrencyList.push(currency)
+        }
       },
-      addCalculatedCurrency (state, calculatedCurrency) {
-        const baseCurrency = calculatedCurrency.baseCurrency
-        const shiftCurrencies = calculatedCurrency.shiftCurrencies
-        if (!state.calculatedCurrencies[baseCurrency]) {
-          state.calculatedCurrencies[baseCurrency] = shiftCurrencies
+      addCalculatedCurrency (state, shiftCurrencies) {
+        if (!state.calculatedCurrencies || !state.calculatedCurrencies[state.baseCurrency]) {
+          state.calculatedCurrencies[state.baseCurrency] = shiftCurrencies
         }
       },
       increasePowerOf10 (state) {
