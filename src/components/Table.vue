@@ -3,7 +3,7 @@
     <table style="width:100%">
       <tr>
         <th>
-          <b-form-select  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="BaseCurrencyList" class="mb-3" />
+          <b-form-select  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="$store.state.BaseCurrencyList" class="mb-3" />
         </th>
         <th>
           <button type="button" @click="onClickExhange()"> 
@@ -11,7 +11,7 @@
           </button>
         </th>
         <th>
-          <b-form-select @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="BaseCurrencyList" class="mb-3" />
+          <b-form-select @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="$store.state.BaseCurrencyList" class="mb-3" />
         </th> 
       </tr>
       <tr v-for="numberToTable in $store.state.numbersToTable" :key="numberToTable.baseNumber">
@@ -27,91 +27,47 @@
 </template>
 
 <script>
-import CurrencyService from '../services/CurrencyService'
 export default {
   name: 'Table',
   data () {
     return {
-      baseCurrency:  '',
-      shiftCurrency: '',
-      BaseCurrencyList: [],
       baseCurrencySelected: null,
       shiftCurrencySelected: null,
     }
   },
   async mounted () {
     this.getSelectedCurrencies()
-    await this.getCurrency(true)
-    await this.$store.commit('loadCurrentShiftCurrencyAmount')
-    await this.$store.commit('loadNumbersToTable')
+    await this.getCurrency()
 
   },
   methods: {
+    onClickExhange() {
+      this.$store.dispatch('exchangeCurrenciesAndLoadNumberToTable')
+      this.baseCurrencySelected = this.$store.state.baseCurrency
+      this.shiftCurrencySelected = this.$store.state.shiftCurrency
+    },
     onClickIncrease() {
-      console.log('incrementar')
       this.$store.dispatch('increasePowerOf10AndLoadNumberToTable')
     },
     async onClickDecrease() {
       this.$store.dispatch('decreasePowerOf10AndLoadNumberToTable')
     },
     async onChangeBaseCurrency(selectedCurrency) {
-      this.baseCurrency = selectedCurrency
-      await this.$store.commit('updateBaseCurrency', this.baseCurrency)
-      await this.getCurrency(false)
-      await this.$store.commit('loadCurrentShiftCurrencyAmount')
-      await this.$store.commit('loadNumbersToTable')
-      console.log(this.$store.state.numbersToTable)
+      await this.$store.commit('updateBaseCurrency', selectedCurrency)
+      await this.getCurrency()
     },
     async onChangeShiftComponent(selectedCurrency) {
-      this.shiftCurrency = selectedCurrency
-      this.$store.commit('updateshiftCurrency', this.shiftCurrency)
-      await this.$store.commit('loadCurrentShiftCurrencyAmount')
-      await this.$store.commit('loadNumbersToTable')
-      console.log(this.$store.state.numbersToTable)
-
+      await this.$store.dispatch('updateShiftCurrencyAndLoadNumberToTable', selectedCurrency)
     },
     getSelectedCurrencies() {
-      this.baseCurrency = this.$store.state.baseCurrency
-      this.baseCurrencySelected = this.baseCurrency
-      this.shiftCurrency = this.$store.state.shiftCurrency
-      this.shiftCurrencySelected = this.shiftCurrency
-      this.BaseCurrencyList = this.$store.state.BaseCurrencyList
+      this.baseCurrencySelected = this.$store.state.baseCurrency
+      this.shiftCurrencySelected = this.$store.state.shiftCurrency
     },
-    getCurrencyFromApi(isMounted, params) {
-      return CurrencyService.getCurrency(params).then(
-        async response => {
-          console.log('success')
-          if(isMounted) {
-            const currenciesNames = Object.keys(response.data.rates)
-            await this.$store.commit('LoadBaseCurrencyList', currenciesNames)
-          }
-          this.checkBaseCurrencyInBaseCurrencyList()
-          const exchangedCurrencyAmount = response.data.rates[params.shiftCurrency]
-          this.BaseCurrencyList = this.$store.state.BaseCurrencyList
-          return await this.addCalculatedCurrencyToStore(params.baseCurrency, response.data.rates)
-        }, error => {
-          console.log(error)
-        }
-      )
-    },
-    getCurrency(isMounted) {
-      const params = {baseCurrency: this.$store.state.baseCurrency,
-                      shiftCurrency: this.$store.state.shiftCurrency}
-      if (!this.$store.state.calculatedCurrencies[params.baseCurrency]) {
-        return this.getCurrencyFromApi(isMounted, params)
+    getCurrency() {
+      if (!this.$store.state.calculatedCurrencies[this.$store.state.baseCurrency]) {
+        return this.$store.dispatch('getCurrencyFromApiAndUpdateEverything')
       }
     },
-    async checkBaseCurrencyInBaseCurrencyList() {
-      if(!this.$store.state.BaseCurrencyList.includes(this.$store.state.baseCurrency)) {
-            return await this.$store.commit('addCurrencyToCurrencyList',this.$store.state.baseCurrency) //add the baseCurrency if it's not in the array
-          }
-    },
-    async addCalculatedCurrencyToStore(baseCurrency, rates) {
-      const calculatedCurrency = {}
-      calculatedCurrency['baseCurrency'] = baseCurrency
-      calculatedCurrency['shiftCurrencies'] = rates
-      return await this.$store.commit('addCalculatedCurrency', calculatedCurrency)
-    }
   }
 }
 </script>
