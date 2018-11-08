@@ -7,6 +7,12 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import store from './store'
+import { MdTable, MdContent, MdCard } from 'vue-material/dist/components'
+import 'vue-material/dist/vue-material.min.css'
+
+Vue.use(MdTable)
+Vue.use(MdContent)
+Vue.use(MdCard)
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
