@@ -14,7 +14,7 @@
           <b-form-select @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="$store.state.BaseCurrencyList" class="mb-3" />
         </th> 
       </tr>
-      <tr v-for="numberToTable in $store.state.numbersToTable" :key="numberToTable.baseNumber">
+      <tr class="currency-row" @click="onClickRow($event)" v-for="numberToTable in $store.state.numbersToTable" :key="numberToTable.baseNumber">
         <th class="text-center">{{numberToTable.baseNumber}}</th>
         <th></th>
         <th class="text-center">{{numberToTable.shiftNumber}}</th>
@@ -41,6 +41,11 @@ export default {
 
   },
   methods: {
+    onClickRow(event) {
+      const choosenNumber = event.target.parentElement.firstChild.textContent
+      console.log(choosenNumber)
+      
+    },
     onClickExhange() {
       this.$store.dispatch('exchangeCurrenciesAndLoadNumberToTable')
       this.baseCurrencySelected = this.$store.state.baseCurrency
@@ -87,5 +92,12 @@ li {
 }
 a {
   color: #42b983;
+}
+.currency-row {
+  cursor: pointer;
+
+}
+.currency-row:hover {
+  background-color: #42b983
 }
 </style>
