@@ -1,29 +1,29 @@
 <template>
   <div>
-    <table style="width:100%">
-      <tr>
-        <th>
-          <b-form-select  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="$store.state.BaseCurrencyList" class="mb-3" />
-        </th>
-        <th>
-          <button type="button" @click="onClickExhange()"> 
-            <i class="fas fa-arrows-alt-h"></i>
-          </button>
-        </th>
-        <th>
-          <b-form-select @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="$store.state.BaseCurrencyList" class="mb-3" />
-        </th> 
-      </tr>
-      <tr class="currency-row" @click="onClickRow($event)" v-for="numberToTable in $store.state.numbersToTable" :key="numberToTable.baseNumber">
-        <th class="text-center">{{numberToTable.baseNumber}}</th>
-        <th></th>
-        <th class="text-center">{{numberToTable.shiftNumber}}</th>
-      </tr>
-    </table>
+    <div id="currency-table">
+      <md-table md-card>
+        <md-table-row id="table-header">
+          <md-table-cell class="text-center">
+            <b-form-select id="base-select"  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="$store.state.BaseCurrencyList" class="mb-3" />
+          </md-table-cell>
+
+          <md-table-cell class="text-center">
+            <b-form-select id="shift-select" @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="$store.state.BaseCurrencyList" class="mb-3" />
+          </md-table-cell>
+        </md-table-row>
+
+        <md-table-row class="currency-row table-row" @click="onClickRow($event)" v-for="numberToTable in $store.state.numbersToTable" :key="numberToTable.baseNumber">
+          <md-table-cell class="base-number">{{numberToTable.baseNumber}}</md-table-cell>
+          <md-table-cell class="shift-number">{{numberToTable.shiftNumber}}</md-table-cell>
+        </md-table-row>
+      </md-table>
+    </div>
     <button type="button" @click = "onClickIncrease()"> Aumentar</button>
     <button type="button" @click = "onClickDecrease()"> Disminuir</button>
-</div>
-
+    <button type="button" @click="onClickExhange()"> 
+      Swap<i class="fas fa-arrows-alt-h"></i>
+    </button>
+  </div>
 </template>
 
 <script>
@@ -44,7 +44,7 @@ export default {
     onClickRow(event) {
       const choosenNumber = event.target.parentElement.firstChild.textContent
       console.log(choosenNumber)
-      
+
     },
     onClickExhange() {
       this.$store.dispatch('exchangeCurrenciesAndLoadNumberToTable')
@@ -79,25 +79,51 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+
 .currency-row {
   cursor: pointer;
 
 }
 .currency-row:hover {
   background-color: #42b983
+}
+#currency-table{
+  text-align: center;
+}
+#table-header{
+  background-color: black;
+}
+.table-row{
+  background-color: #01001E;
+  color: darkgrey;
+  border-color: #01001E;
+}
+.form-control{
+  background-color: black;
+  border-color: black;
+  text-align: center;
+}
+.form-control:hover{
+  background-color: black;
+  border-color: black;
+  text-align: center;
+}
+.shift-number{
+  background-color: #005F33;
+}
+.base-number{
+  
+}
+.md-table-cell{
+  font-size: 24px!important;
+}
+#base-select{
+  color:darkgoldenrod;
+}
+#shift-select{
+  color:darkred;
+}
+.mb-3{
+  margin-bottom: 0!important;
 }
 </style>
