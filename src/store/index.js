@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import _ from 'lodash'
 
 Vue.use(Vuex)
 
@@ -8,9 +9,23 @@ export default new Vuex.Store(
     state: {
       baseCurrency: 'USD',
       shiftCurrency: 'EUR',
+      currentShiftCurrencyAmount: null,
       selectedNumber: null,
+      firstTableNumber: 1,
+      powerOf10Number: 1,
       calculatedCurrencies: {},
-      BaseCurrencyList: []
+      BaseCurrencyList: [],
+      numbersToTable: []
+    },
+    actions: {
+      async increasePowerOf10AndLoadNumberToTable (store) {
+        await store.commit('increasePowerOf10')
+        store.commit('loadNumbersToTable')
+      },
+      async decreasePowerOf10AndLoadNumberToTable (store) {
+        await store.commit('decreasePowerOf10')
+        store.commit('loadNumbersToTable')
+      }
     },
     mutations: {
       updateBaseCurrency (state, baseCurrency) {
@@ -37,8 +52,30 @@ export default new Vuex.Store(
         if (!state.calculatedCurrencies[baseCurrency]) {
           state.calculatedCurrencies[baseCurrency] = shiftCurrencies
         }
+      },
+      increasePowerOf10 (state) {
+        state.powerOf10Number += 1
+      },
+      decreasePowerOf10 (state) {
+        state.powerOf10Number -= 1
+      },
+      loadCurrentShiftCurrencyAmount (state) {
+        state.currentShiftCurrencyAmount = state.calculatedCurrencies[state.baseCurrency][state.shiftCurrency]
+      },
+      loadNumbersToTable (state) {
+        state.numbersToTable = []
+        for (let value of _.range(10)) {
+          const numbers = {}
+          const unit = value + 1
+          const baseNumber = unit * state.firstTableNumber * Math.pow(10, state.powerOf10Number)
+          const shiftNumber = baseNumber * state.currentShiftCurrencyAmount
+          numbers['baseNumber'] = baseNumber
+          numbers['shiftNumber'] = shiftNumber.toFixed(2)
+          console.log(numbers)
+          state.numbersToTable.push(numbers)
+          
+        }
       }
-
     }
   }
 )
