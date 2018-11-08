@@ -17,6 +17,16 @@ export default new Vuex.Store(
       BaseCurrencyList: [],
       numbersToTable: []
     },
+    actions: {
+      async increasePowerOf10AndLoadNumberToTable (store) {
+        await store.commit('increasePowerOf10')
+        store.commit('loadNumbersToTable')
+      },
+      async decreasePowerOf10AndLoadNumberToTable (store) {
+        await store.commit('decreasePowerOf10')
+        store.commit('loadNumbersToTable')
+      }
+    },
     mutations: {
       updateBaseCurrency (state, baseCurrency) {
         state.baseCurrency = baseCurrency
@@ -45,6 +55,9 @@ export default new Vuex.Store(
       },
       increasePowerOf10 (state) {
         state.powerOf10Number += 1
+      },
+      decreasePowerOf10 (state) {
+        state.powerOf10Number -= 1
       }
     }
   }
