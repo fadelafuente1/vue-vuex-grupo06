@@ -29,18 +29,19 @@ export default new Vuex.Store(
             await store.commit('loadCurrentShiftCurrencyAmount')
             await store.commit('loadNumbersToTable')
             await store.commit('addSubrowToNumbersToTable')
-            console.log(store.state.numbersToTable)
           }, error => {
             console.log(error)
           })
       },
       async increasePowerOf10AndLoadNumberToTable (store) {
         await store.commit('increasePowerOf10')
-        store.commit('loadNumbersToTable')
+        await store.commit('loadNumbersToTable')
+        await store.commit('addSubrowToNumbersToTable')
       },
       async decreasePowerOf10AndLoadNumberToTable (store) {
         await store.commit('decreasePowerOf10')
-        store.commit('loadNumbersToTable')
+        await store.commit('loadNumbersToTable')
+        await store.commit('addSubrowToNumbersToTable')
       },
       async exchangeCurrenciesAndLoadNumberToTable (store) {
         await store.commit('exchangeCurrencies')
@@ -48,12 +49,14 @@ export default new Vuex.Store(
           return store.dispatch('getCurrencyFromApiAndUpdateEverything')
         }
         await store.commit('loadCurrentShiftCurrencyAmount')
-        return store.commit('loadNumbersToTable')
+        await store.commit('loadNumbersToTable')
+        await store.commit('addSubrowToNumbersToTable')
       },
       async updateShiftCurrencyAndLoadNumberToTable (store, selectedCurrency) {
         await store.commit('updateshiftCurrency', selectedCurrency)
         await store.commit('loadCurrentShiftCurrencyAmount')
         await store.commit('loadNumbersToTable')
+        await store.commit('addSubrowToNumbersToTable')
       }
     },
     mutations: {
