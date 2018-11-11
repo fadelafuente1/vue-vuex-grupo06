@@ -2,38 +2,32 @@
   <div>
     <div class="page-container md-layout-column" id="currency-table">
       <md-table md-card>
+        <md-drawer :md-active.sync="showNavigation">
+          <md-toolbar class="md-transparent" md-elevation="0">
+            <span class="md-title">Vue Grupo 06</span>
+          </md-toolbar>
+          <md-list>
+            <md-list-item>
+              <PlusIcon/>
+              <span class="md-list-item-text" @click = "onClickIncrease()">Aumentar x10</span>
+            </md-list-item>
+
+            <md-list-item>
+              <MinusIcon/>
+              <span class="md-list-item-text" @click = "onClickDecrease()">Disminuir x10</span>
+            </md-list-item>
+
+            <md-list-item>
+              <SwapIcon/>
+              <span class="md-list-item-text" @click="onClickExhange()">Intercambiar monedas</span>
+            </md-list-item>
+          </md-list>
+        </md-drawer>
         <md-table-row id="table-header">
           <md-table-cell class="text-center">
-            <!-- <md-button class="md-icon-button" @click="showNavigation = !showNavigation">
-              <md-icon class="menu">menu</md-icon>
-            </md-button> -->
-            <!-- <md-drawer :md-active.sync="showNavigation">
-              <md-toolbar class="md-transparent" md-elevation="0">
-                <span class="md-title">My App name</span>
-              </md-toolbar>
-
-              <md-list>
-                <md-list-item>
-                  <md-icon>move_to_inbox</md-icon>
-                  <span class="md-list-item-text">Inbox</span>
-                </md-list-item>
-
-                <md-list-item>
-                  <md-icon>send</md-icon>
-                  <span class="md-list-item-text">Sent Mail</span>
-                </md-list-item>
-
-                <md-list-item>
-                  <md-icon>delete</md-icon>
-                  <span class="md-list-item-text">Trash</span>
-                </md-list-item>
-
-                <md-list-item>
-                  <md-icon>error</md-icon>
-                  <span class="md-list-item-text">Spam</span>
-                </md-list-item>
-              </md-list>
-            </md-drawer> -->
+            <span class="menu-button" @click="showNavigation = !showNavigation">
+              <MenuIcon/>
+            </span>  
             <b-form-select id="base-select"  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="$store.state.BaseCurrencyList" class="mb-3" />
           </md-table-cell>
 
@@ -48,18 +42,13 @@
           </md-table-row>
         </template>
         <template v-if="subrowShow!== []" v-for="(subrowNumberToTable, i) in subrowShow" >
-          <md-table-row @click= "onClickRow(0)" class="currency-subrow" :key="subrowNumberToTable.baseNumber">
-            <md-table-cell  v-bind:class="{ baseItem: (i === 0 || i == 10)  }" class="base-number">{{subrowNumberToTable.baseNumber}}</md-table-cell>
-            <md-table-cell class="shift-number">{{subrowNumberToTable.shiftNumber}}</md-table-cell>
+          <md-table-row @click= "onClickRow(0)" :key="subrowNumberToTable.baseNumber">
+            <md-table-cell class="currency-subrow base-number" v-bind:class="{ baseItem: (i === 0 || i == 10)  }" >{{subrowNumberToTable.baseNumber}}</md-table-cell>
+            <md-table-cell class="currency-subrow shift-number">{{subrowNumberToTable.shiftNumber}}</md-table-cell>
           </md-table-row>
         </template>
       </md-table>
     </div>
-    <button type="button" @click = "onClickIncrease()"> Aumentar</button>
-    <button type="button" @click = "onClickDecrease()"> Disminuir</button>
-    <button type="button" @click="onClickExhange()"> 
-      Swap<i class="fas fa-arrows-alt-h"></i>
-    </button>
   </div>
 </template>
 
@@ -85,20 +74,24 @@ export default {
     onClickRow(index) {
       this.subrowShow = this.subrowShow ? this.subrowShow = null : this.$store.state.numbersToTable[index].subrowNumbers
     },
-    onClickExhange() {
-      this.$store.dispatch('exchangeCurrenciesAndLoadNumberToTable')
+  async onClickExhange() {
+      await this.$store.dispatch('exchangeCurrenciesAndLoadNumberToTable')
       this.baseCurrencySelected = this.$store.state.baseCurrency
       this.shiftCurrencySelected = this.$store.state.shiftCurrency
+      this.showNavigation = false
     },
     onClickIncrease() {
       this.$store.dispatch('increasePowerOf10AndLoadNumberToTable')
+      this.showNavigation = false
     },
     async onClickDecrease() {
       this.$store.dispatch('decreasePowerOf10AndLoadNumberToTable')
+      this.showNavigation = false
     },
     async onChangeBaseCurrency(selectedCurrency) {
       await this.$store.commit('updateBaseCurrency', selectedCurrency)
       await this.getCurrency()
+
     },
     async onChangeShiftComponent(selectedCurrency) {
       await this.$store.dispatch('updateShiftCurrencyAndLoadNumberToTable', selectedCurrency)
@@ -124,35 +117,39 @@ export default {
 
 }
 .currency-row:hover {
-  background-color: #42b983;
-  color: black;
+  background-color: lightseagreen;
+  color: white;
 }
 #currency-table{
   text-align: center;
 }
 #table-header{
-  background-color: black;
+  background-color: lightseagreen;
 }
 .table-row{
-  background-color: #01001E;
-  color: darkgrey;
+  background-color: white;
+  color: black;
   border-color: #01001E;
 }
 .form-control{
-  background-color: black;
-  border-color: black;
+  background-color: lightseagreen;
+  border-color: lightseagreen;
   text-align: center;
 }
 .form-control:hover{
-  background-color: black;
-  border-color: black;
+  background-color: lightseagreen;
+  border-color: lightseagreen;
+  color: white;
   text-align: center;
 }
 .shift-number{
-  background-color: #005F33;
+  background-color: gray;
   color: white;
+  font-weight: bold;
+  text-shadow: -0.7px 0 black;
 }
 .base-number{
+  font-weight: bold;
   /* color: white; */
 }
 .md-table-cell{
@@ -161,9 +158,11 @@ export default {
 #base-select{
   color:darkgoldenrod;
   width: 90%;
+  font-weight: bold;
 }
 #shift-select{
   color:darkred;
+  font-weight: bold;
 }
 .mb-3{
   margin-bottom: 0!important;
@@ -172,9 +171,32 @@ export default {
   color: white;
 }
 .baseItem{
-  background-color: #01001E;
-  color: darkgrey;
+  background-color: lightseagreen;
+  color: white;
   border-color: #01001E;
   cursor: pointer;
+  font-size: 24px!important;
+}
+.md-drawer {
+  width: 230px;
+  max-width: calc(100vw - 125px);
+  background-color: white;
+}
+.md-content {
+  padding: 16px;
+}
+.page-container{
+  overflow: hidden;
+}
+.menu-button{
+  cursor: pointer;
+  color: white;
+}
+.md-list-item{
+  border-bottom: 1px solid black;
+  cursor: pointer;
+}
+.currency-subrow{
+  font-size: 18px!important;
 }
 </style>
