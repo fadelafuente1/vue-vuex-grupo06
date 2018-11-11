@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="currency-table">
+    <div class="page-container md-layout-column" id="currency-table">
       <md-table md-card>
         <md-table-row id="table-header">
           <md-table-cell class="text-center">
@@ -11,11 +11,18 @@
             <b-form-select id="shift-select" @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="$store.state.BaseCurrencyList" class="mb-3" />
           </md-table-cell>
         </md-table-row>
-
-        <md-table-row class="currency-row table-row" @click="onClickRow($event)" v-for="numberToTable in $store.state.numbersToTable" :key="numberToTable.baseNumber">
-          <md-table-cell class="base-number">{{numberToTable.baseNumber}}</md-table-cell>
-          <md-table-cell class="shift-number">{{numberToTable.shiftNumber}}</md-table-cell>
-        </md-table-row>
+        <template v-if="!subrowShow" v-for="(numberToTable, index) in $store.state.numbersToTable"  >
+          <md-table-row :key="numberToTable.baseNumber" class="currency-row table-row" @click= "onClickRow(index)" >
+            <md-table-cell class="base-number">{{numberToTable.baseNumber}}</md-table-cell>
+            <md-table-cell class="shift-number">{{numberToTable.shiftNumber}}</md-table-cell>
+          </md-table-row>
+        </template>
+        <template v-if="subrowShow!== []" v-for="(subrowNumberToTable, i) in subrowShow" >
+          <md-table-row @click= "onClickRow(0)" class="currency-subrow" :key="subrowNumberToTable.baseNumber">
+            <md-table-cell  v-bind:class="{ baseItem: (i === 0 || i == 10)  }" class="base-number">{{subrowNumberToTable.baseNumber}}</md-table-cell>
+            <md-table-cell class="shift-number">{{subrowNumberToTable.shiftNumber}}</md-table-cell>
+          </md-table-row>
+        </template>
       </md-table>
     </div>
     <button type="button" @click = "onClickIncrease()"> Aumentar</button>
@@ -27,24 +34,26 @@
 </template>
 
 <script>
+import _ from 'lodash'
 export default {
   name: 'Table',
   data () {
     return {
       baseCurrencySelected: null,
       shiftCurrencySelected: null,
+      showNavigation: false,
+      subrowShow: null,
     }
   },
   async mounted () {
-    this.getSelectedCurrencies()
+    // this.subrowShow[0] = false
+    await this.getSelectedCurrencies()
     await this.getCurrency()
 
   },
   methods: {
-    onClickRow(event) {
-      const choosenNumber = event.target.parentElement.firstChild.textContent
-      console.log(choosenNumber)
-
+    onClickRow(index) {
+      this.subrowShow = this.subrowShow ? this.subrowShow = null : this.$store.state.numbersToTable[index].subrowNumbers
     },
     onClickExhange() {
       this.$store.dispatch('exchangeCurrenciesAndLoadNumberToTable')
@@ -85,7 +94,8 @@ export default {
 
 }
 .currency-row:hover {
-  background-color: #42b983
+  background-color: #42b983;
+  color: black;
 }
 #currency-table{
   text-align: center;
@@ -110,20 +120,31 @@ export default {
 }
 .shift-number{
   background-color: #005F33;
+  color: white;
 }
 .base-number{
-  
+  /* color: white; */
 }
 .md-table-cell{
   font-size: 24px!important;
 }
 #base-select{
   color:darkgoldenrod;
+  width: 90%;
 }
 #shift-select{
   color:darkred;
 }
 .mb-3{
   margin-bottom: 0!important;
+}
+.menu{
+  color: white;
+}
+.baseItem{
+  background-color: #01001E;
+  color: darkgrey;
+  border-color: #01001E;
+  cursor: pointer;
 }
 </style>
