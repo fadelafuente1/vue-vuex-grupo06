@@ -113,6 +113,7 @@ export default new Vuex.Store(
         state.numbersToTable.forEach(
           row => {
             const subrowNumbersToTable = []
+            subrowNumbersToTable.push({ 'baseNumber': row['baseNumber'], 'shiftNumber': row['shiftNumber'] })
             for (let subrowValue of _.range(10)) {
               const subrowNumbers = {}
               const subrowUnit = subrowValue + 1
@@ -123,6 +124,7 @@ export default new Vuex.Store(
               subrowNumbers['shiftNumber'] = subrowShiftNumber.toFixed(2)
               subrowNumbersToTable.push(subrowNumbers)
             }
+            row['clickead'] = false
             row['subrowNumbers'] = subrowNumbersToTable
           }
         )
