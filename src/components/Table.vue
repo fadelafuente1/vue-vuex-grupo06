@@ -4,6 +4,36 @@
       <md-table md-card>
         <md-table-row id="table-header">
           <md-table-cell class="text-center">
+            <!-- <md-button class="md-icon-button" @click="showNavigation = !showNavigation">
+              <md-icon class="menu">menu</md-icon>
+            </md-button> -->
+            <!-- <md-drawer :md-active.sync="showNavigation">
+              <md-toolbar class="md-transparent" md-elevation="0">
+                <span class="md-title">My App name</span>
+              </md-toolbar>
+
+              <md-list>
+                <md-list-item>
+                  <md-icon>move_to_inbox</md-icon>
+                  <span class="md-list-item-text">Inbox</span>
+                </md-list-item>
+
+                <md-list-item>
+                  <md-icon>send</md-icon>
+                  <span class="md-list-item-text">Sent Mail</span>
+                </md-list-item>
+
+                <md-list-item>
+                  <md-icon>delete</md-icon>
+                  <span class="md-list-item-text">Trash</span>
+                </md-list-item>
+
+                <md-list-item>
+                  <md-icon>error</md-icon>
+                  <span class="md-list-item-text">Spam</span>
+                </md-list-item>
+              </md-list>
+            </md-drawer> -->
             <b-form-select id="base-select"  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="$store.state.BaseCurrencyList" class="mb-3" />
           </md-table-cell>
 
