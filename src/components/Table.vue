@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="full-container">
     <div class="page-container md-layout-column" id="currency-table">
       <v-touch v-on:swipeleft="swipeLeftHandler" v-on:swiperight="swipRightHandler">
         <md-table md-card>
@@ -119,6 +119,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#full-container{
+  background-color: lightseagreen;
+  height: 100vh;
+}
 .menu-item{
   padding-left: 2%;
 }
