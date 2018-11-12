@@ -5,7 +5,10 @@
         <md-table md-card>
           <md-drawer :md-active.sync="showNavigation">
             <md-toolbar class="md-transparent" md-elevation="0">
-              <span class="md-title">Vue Grupo 06</span>
+              <span id="home-toolbar" class="menu-button" @click="showNavigation = !showNavigation">
+                <MenuIcon/>
+              </span> 
+              <span class="md-title">Vue Grupo06</span>
             </md-toolbar>
             <md-list>
               <md-list-item>
@@ -206,6 +209,11 @@ export default {
 .menu-button{
   cursor: pointer;
   color: white;
+}
+#home-toolbar{
+  color: #01001E;
+  cursor: pointer;
+  font-size: 24px!important;
 }
 .md-list-item{
   border-bottom: 1px solid black;
