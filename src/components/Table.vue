@@ -1,40 +1,16 @@
 <template>
   <div id="full-container">
+    <Sidebar title="Vue Grupo06" v-on:clickExhange="onClickExhange()" ></Sidebar>
     <div class="page-container md-layout-column" id="currency-table">
       <v-touch v-on:swipeleft="swipeLeftHandler" v-on:swiperight="swipRightHandler">
         <md-table md-card>
-          <md-drawer :md-active.sync="showNavigation">
-            <md-toolbar class="md-transparent" md-elevation="0">
-              <span id="home-toolbar" class="menu-button" @click="showNavigation = !showNavigation">
-                <MenuIcon/>
-              </span> 
-              <span class="md-title">Vue Grupo06</span>
-            </md-toolbar>
-            <md-list>
-              <md-list-item>
-                <PlusIcon/>
-                <span class="md-list-item-text" @click = "onClickIncrease()">Aumentar x10</span>
-              </md-list-item>
-
-              <md-list-item>
-                <MinusIcon/>
-                <span class="md-list-item-text" @click = "onClickDecrease()">Disminuir x10</span>
-              </md-list-item>
-
-              <md-list-item>
-                <SwapIcon/>
-                <span class="md-list-item-text" @click="onClickExhange()">Intercambiar monedas</span>
-              </md-list-item>
-            </md-list>
-          </md-drawer>
           <md-table-row id="table-header">
             <md-table-cell class="text-center">
-              <span class="menu-button" @click="showNavigation = !showNavigation">
+              <span class="menu-button" @click="onClickMenu()">
                 <MenuIcon/>
               </span>  
               <b-form-select id="base-select"  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="$store.state.BaseCurrencyList" class="mb-3" />
             </md-table-cell>
-
             <md-table-cell class="text-center">
               <b-form-select id="shift-select" @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="$store.state.BaseCurrencyList" class="mb-3" />
             </md-table-cell>
@@ -59,45 +35,41 @@
 
 <script>
 import _ from 'lodash'
+import Sidebar from './Sidebar'
 export default {
   name: 'Table',
+  components: {
+    Sidebar
+  },
   data () {
     return {
       baseCurrencySelected: null,
       shiftCurrencySelected: null,
-      showNavigation: false,
       subrowShow: null,
     }
   },
   async mounted () {
-    // this.subrowShow[0] = false
     await this.getSelectedCurrencies()
     await this.getCurrency()
-
   },
   methods: {
-    swipRightHandler() {
-      this.onClickIncrease()
-    },
-    swipeLeftHandler(){
-      this.onClickDecrease()
-    },
-    onClickRow(index) {
-      this.subrowShow = this.subrowShow ? this.subrowShow = null : this.$store.state.numbersToTable[index].subrowNumbers
+    async onClickMenu() {
+      await this.$store.commit('changeShowNavigation')
     },
     async onClickExhange() {
       await this.$store.dispatch('exchangeCurrenciesAndLoadNumberToTable')
       this.baseCurrencySelected = this.$store.state.baseCurrency
       this.shiftCurrencySelected = this.$store.state.shiftCurrency
-      this.showNavigation = false
+      this.$store.commit('changeShowNavigation')
     },
-    async onClickIncrease() {
-      await this.$store.dispatch('increasePowerOf10AndLoadNumberToTable')
-      this.showNavigation = false
+    swipRightHandler() {
+      this.$store.dispatch('increasePowerOf10AndLoadNumberToTable')
     },
-    async onClickDecrease() {
+    swipeLeftHandler(){
       this.$store.dispatch('decreasePowerOf10AndLoadNumberToTable')
-      this.showNavigation = false
+    },
+    onClickRow(index) {
+      this.subrowShow = this.subrowShow ? this.subrowShow = null : this.$store.state.numbersToTable[index].subrowNumbers
     },
     async onChangeBaseCurrency(selectedCurrency) {
       await this.$store.commit('updateBaseCurrency', selectedCurrency)
@@ -127,7 +99,7 @@ export default {
   height: 100vh;
 }
 .menu-item{
-  padding-left: 2%;
+  padding-left: 1%;
 }
 .currency-row {
   cursor: pointer;
@@ -195,34 +167,13 @@ export default {
   cursor: pointer;
   font-size: 24px!important;
 }
-.md-drawer {
-  width: 230px;
-  max-width: calc(100vw - 125px);
-  background-color: white;
-}
-.md-content {
-  padding: 16px;
-}
-.page-container{
-  overflow: hidden;
-}
 .menu-button{
   cursor: pointer;
   color: white;
 }
-#home-toolbar{
-  color: #01001E;
-  cursor: pointer;
-  font-size: 24px!important;
-}
-.md-list-item{
-  border-bottom: 1px solid black;
-  cursor: pointer;
-}
 .currency-subrow{
   font-size: 18px!important;
 }
-
 </style>
 
 <style lang="css">
