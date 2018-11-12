@@ -166,12 +166,12 @@ export default {
   padding: 0!important;
 }
 #base-select{
-  color: orangered;
+  color: white;
   width: 78%;
   font-weight: bold;
 }
 #shift-select{
-  color:yellow;
+  color:lightgray;
   width: 80%;
   font-weight: bold;
 }
