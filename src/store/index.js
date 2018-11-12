@@ -15,7 +15,8 @@ export default new Vuex.Store(
       powerOf10Number: 1,
       calculatedCurrencies: {},
       BaseCurrencyList: [],
-      numbersToTable: []
+      numbersToTable: [],
+      showNavigation: false
     },
     actions: {
       async getCurrencyFromApiAndUpdateEverything (store) {
@@ -60,6 +61,9 @@ export default new Vuex.Store(
       }
     },
     mutations: {
+      changeShowNavigation (state) {
+        state.showNavigation = !state.showNavigation
+      },
       updateBaseCurrency (state, baseCurrency) {
         state.baseCurrency = baseCurrency
       },
