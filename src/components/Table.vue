@@ -119,10 +119,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.menu-item{
+  padding-left: 2%;
+}
 .currency-row {
   cursor: pointer;
-
 }
 .currency-row:hover {
   background-color: lightseagreen;
@@ -158,18 +159,20 @@ export default {
 }
 .base-number{
   font-weight: bold;
-  /* color: white; */
 }
 .md-table-cell{
+  width: 50%;
   font-size: 24px!important;
+  padding: 0!important;
 }
 #base-select{
-  color:darkgoldenrod;
-  width: 90%;
+  color: orangered;
+  width: 78%;
   font-weight: bold;
 }
 #shift-select{
-  color:darkred;
+  color:yellow;
+  width: 80%;
   font-weight: bold;
 }
 .mb-3{
@@ -207,4 +210,11 @@ export default {
 .currency-subrow{
   font-size: 18px!important;
 }
+
+</style>
+
+<style lang="css">
+.md-table-cell-container {
+    padding: 0px !important;
+  }
 </style>
