@@ -1,8 +1,11 @@
 
     <template >
-      <md-table-row class="table-row" v-bind:class="{currencySubrow: baseStyle, currencyRow: !baseStyle}" @click= "onClickRow(index)" >
-        <md-table-cell class="base-number" v-bind:style="{fontSize: '18px'}" v-bind:class="{ baseItem: baseStyle && (index === 0 || index == 10)}">{{numberToTable.baseNumber}}</md-table-cell>
-        <md-table-cell class="shift-number-background shift-number">{{numberToTable.shiftNumber}}</md-table-cell>
+      <md-table-row class="table-row"  >
+        <md-table-cell class="base-number" 
+        v-bind:class="{currencySubrow: baseStyle, currencyRow: !baseStyle, baseItem: baseStyle && (index === 0 || index == 10)}"
+        @click.native= "onClickRow(index)">
+          {{numberToTable.baseNumber}}</md-table-cell>
+        <md-table-cell v-bind:class="{currencySubrow: baseStyle}" class="shift-number-background shift-number">{{numberToTable.shiftNumber}}</md-table-cell>
         <div id="clear"></div>
       </md-table-row>
     </template>
