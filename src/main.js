@@ -14,6 +14,7 @@ import MenuIcon from 'vue-material-design-icons/menu.vue'
 import SwapIcon from 'vue-material-design-icons/swap-horizontal-variant.vue'
 import PlusIcon from 'vue-material-design-icons/plus-circle.vue'
 import MinusIcon from 'vue-material-design-icons/minus-circle.vue'
+import VueTouch from 'vue-touch'
 
 
 Vue.use(MdTable)
@@ -24,6 +25,7 @@ Vue.use(MdIcon)
 Vue.use(MdDrawer)
 Vue.use(MdToolbar)
 Vue.use(MdList)
+Vue.use(VueTouch, {name: 'v-touch'})
 
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)

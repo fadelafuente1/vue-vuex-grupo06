@@ -1,53 +1,55 @@
 <template>
   <div>
     <div class="page-container md-layout-column" id="currency-table">
-      <md-table md-card>
-        <md-drawer :md-active.sync="showNavigation">
-          <md-toolbar class="md-transparent" md-elevation="0">
-            <span class="md-title">Vue Grupo 06</span>
-          </md-toolbar>
-          <md-list>
-            <md-list-item>
-              <PlusIcon/>
-              <span class="md-list-item-text" @click = "onClickIncrease()">Aumentar x10</span>
-            </md-list-item>
+      <v-touch v-on:swipeleft="swipeLeftHandler" v-on:swiperight="swipRightHandler">
+        <md-table md-card>
+          <md-drawer :md-active.sync="showNavigation">
+            <md-toolbar class="md-transparent" md-elevation="0">
+              <span class="md-title">Vue Grupo 06</span>
+            </md-toolbar>
+            <md-list>
+              <md-list-item>
+                <PlusIcon/>
+                <span class="md-list-item-text" @click = "onClickIncrease()">Aumentar x10</span>
+              </md-list-item>
 
-            <md-list-item>
-              <MinusIcon/>
-              <span class="md-list-item-text" @click = "onClickDecrease()">Disminuir x10</span>
-            </md-list-item>
+              <md-list-item>
+                <MinusIcon/>
+                <span class="md-list-item-text" @click = "onClickDecrease()">Disminuir x10</span>
+              </md-list-item>
 
-            <md-list-item>
-              <SwapIcon/>
-              <span class="md-list-item-text" @click="onClickExhange()">Intercambiar monedas</span>
-            </md-list-item>
-          </md-list>
-        </md-drawer>
-        <md-table-row id="table-header">
-          <md-table-cell class="text-center">
-            <span class="menu-button" @click="showNavigation = !showNavigation">
-              <MenuIcon/>
-            </span>  
-            <b-form-select id="base-select"  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="$store.state.BaseCurrencyList" class="mb-3" />
-          </md-table-cell>
+              <md-list-item>
+                <SwapIcon/>
+                <span class="md-list-item-text" @click="onClickExhange()">Intercambiar monedas</span>
+              </md-list-item>
+            </md-list>
+          </md-drawer>
+          <md-table-row id="table-header">
+            <md-table-cell class="text-center">
+              <span class="menu-button" @click="showNavigation = !showNavigation">
+                <MenuIcon/>
+              </span>  
+              <b-form-select id="base-select"  v-model="baseCurrencySelected" @change = "onChangeBaseCurrency($event)" :options="$store.state.BaseCurrencyList" class="mb-3" />
+            </md-table-cell>
 
-          <md-table-cell class="text-center">
-            <b-form-select id="shift-select" @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="$store.state.BaseCurrencyList" class="mb-3" />
-          </md-table-cell>
-        </md-table-row>
-        <template v-if="!subrowShow" v-for="(numberToTable, index) in $store.state.numbersToTable"  >
-          <md-table-row :key="numberToTable.baseNumber" class="currency-row table-row" @click= "onClickRow(index)" >
-            <md-table-cell class="base-number">{{numberToTable.baseNumber}}</md-table-cell>
-            <md-table-cell class="shift-number">{{numberToTable.shiftNumber}}</md-table-cell>
+            <md-table-cell class="text-center">
+              <b-form-select id="shift-select" @change = "onChangeShiftComponent($event)" v-model="shiftCurrencySelected" :options="$store.state.BaseCurrencyList" class="mb-3" />
+            </md-table-cell>
           </md-table-row>
-        </template>
-        <template v-if="subrowShow!== []" v-for="(subrowNumberToTable, i) in subrowShow" >
-          <md-table-row @click= "onClickRow(0)" :key="subrowNumberToTable.baseNumber">
-            <md-table-cell class="currency-subrow base-number" v-bind:class="{ baseItem: (i === 0 || i == 10)  }" >{{subrowNumberToTable.baseNumber}}</md-table-cell>
-            <md-table-cell class="currency-subrow shift-number">{{subrowNumberToTable.shiftNumber}}</md-table-cell>
-          </md-table-row>
-        </template>
-      </md-table>
+            <template  v-if="!subrowShow" v-for="(numberToTable, index) in $store.state.numbersToTable" >
+              <md-table-row :key="numberToTable.baseNumber" class="currency-row table-row" @click= "onClickRow(index)" >
+                <md-table-cell class="base-number">{{numberToTable.baseNumber}}</md-table-cell>
+                <md-table-cell class="shift-number">{{numberToTable.shiftNumber}}</md-table-cell>
+              </md-table-row>
+            </template>
+            <template v-if="subrowShow!== []" v-for="(subrowNumberToTable, i) in subrowShow" >
+              <md-table-row @click= "onClickRow(0)" :key="subrowNumberToTable.baseNumber">
+                <md-table-cell class="currency-subrow base-number" v-bind:class="{ baseItem: (i === 0 || i == 10)  }" >{{subrowNumberToTable.baseNumber}}</md-table-cell>
+                <md-table-cell class="currency-subrow shift-number">{{subrowNumberToTable.shiftNumber}}</md-table-cell>
+              </md-table-row>
+            </template>
+        </md-table>
+      </v-touch>
     </div>
   </div>
 </template>
@@ -71,17 +73,23 @@ export default {
 
   },
   methods: {
+    swipRightHandler() {
+      this.onClickIncrease()
+    },
+    swipeLeftHandler(){
+      this.onClickDecrease()
+    },
     onClickRow(index) {
       this.subrowShow = this.subrowShow ? this.subrowShow = null : this.$store.state.numbersToTable[index].subrowNumbers
     },
-  async onClickExhange() {
+    async onClickExhange() {
       await this.$store.dispatch('exchangeCurrenciesAndLoadNumberToTable')
       this.baseCurrencySelected = this.$store.state.baseCurrency
       this.shiftCurrencySelected = this.$store.state.shiftCurrency
       this.showNavigation = false
     },
-    onClickIncrease() {
-      this.$store.dispatch('increasePowerOf10AndLoadNumberToTable')
+    async onClickIncrease() {
+      await this.$store.dispatch('increasePowerOf10AndLoadNumberToTable')
       this.showNavigation = false
     },
     async onClickDecrease() {
