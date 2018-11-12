@@ -10,13 +10,13 @@ export default new Vuex.Store(
       baseCurrency: 'USD',
       shiftCurrency: 'EUR',
       currentShiftCurrencyAmount: null,
-      selectedNumber: null,
       firstTableNumber: 1,
       powerOf10Number: 1,
       calculatedCurrencies: {},
       BaseCurrencyList: [],
       numbersToTable: [],
-      showNavigation: false
+      showNavigation: false,
+      subrowShow: null
     },
     actions: {
       async getCurrencyFromApiAndUpdateEverything (store) {
@@ -61,6 +61,9 @@ export default new Vuex.Store(
       }
     },
     mutations: {
+      updateSubrowShow (state, subrowShow) {
+        state.subrowShow = subrowShow
+      },
       changeShowNavigation (state) {
         state.showNavigation = !state.showNavigation
       },
